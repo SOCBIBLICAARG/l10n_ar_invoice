@@ -65,20 +65,6 @@ class account_invoice_line(models.Model):
 
 account_invoice_line()
 
-def _calc_concept(product_types):
-
-    if product_types == set(['consu']):
-        concept = '1'
-    elif product_types == set(['service']):
-        concept = '2'
-    elif product_types == set(['consu','service']):
-        concept = '3'
-    else:
-        raise exceptions.Warning(
-            _('Cant compute AFIP concept from product types %s.') % product_types
-        )
-    return concept
-
 class account_invoice(models.Model):
     """
     Argentine invoice functions.

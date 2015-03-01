@@ -111,7 +111,7 @@ class afip_concept_type(models.Model):
 
     @api.model
     def get_code(self, types):
-        types = set(types)
+        types = set(t for t in types if is_instance(t, str))
         if not types:
             return False
         for concept in self.search([]):
