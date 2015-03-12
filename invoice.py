@@ -65,20 +65,6 @@ class account_invoice_line(models.Model):
 
 account_invoice_line()
 
-def _calc_concept(product_types):
-
-    if product_types == set(['consu']):
-        concept = '1'
-    elif product_types == set(['service']):
-        concept = '2'
-    elif product_types == set(['consu','service']):
-        concept = '3'
-    else:
-        raise exceptions.Warning(
-            _('Cant compute AFIP concept from product types %s.') % product_types
-        )
-    return concept
-
 class account_invoice(models.Model):
     """
     Argentine invoice functions.
@@ -164,7 +150,7 @@ class account_invoice(models.Model):
 
             # If Final Consumer have pay more than 1000$, you need more information to generate document.
             if invoice.partner_id.responsability_id.code == 'CF' and invoice.amount_total > 1000 and \
-               (invoice.partner_id.document_type.code in [ None, 'Sigd' ] or invoice.partner_id.document_number is None):
+               (invoice.partner_id.document_type_id.code in [ None, 'Sigd' ] or invoice.partner_id.document_number is None):
                 raise except_orm(_('Partner without Identification for total invoices > $1000.-'),
                                  _('You must define valid document type and number for this Final Consumer.'))
         return True

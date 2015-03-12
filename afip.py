@@ -4,6 +4,7 @@ from openerp import fields as Fields
 from openerp.osv import fields, osv
 from openerp import exceptions
 
+
 class afip_journal_template(osv.osv):
     _name = 'afip.journal_template'
     _columns = {
@@ -111,7 +112,7 @@ class afip_concept_type(models.Model):
 
     @api.model
     def get_code(self, types):
-        types = set(types)
+        types = set(t for t in types if isinstance(t, (unicode, str)))
         if not types:
             return False
         for concept in self.search([]):
