@@ -4,6 +4,9 @@ from openerp import fields as Fields
 from openerp.osv import fields, osv
 from openerp import exceptions
 
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class afip_journal_template(osv.osv):
     _name = 'afip.journal_template'
@@ -112,7 +115,9 @@ class afip_concept_type(models.Model):
 
     @api.model
     def get_code(self, types):
+        _logger.info("In Concept: %s" % types)
         types = set(t for t in types if isinstance(t, (unicode, str)))
+        _logger.info("Concept: %s" % types)
         if not types:
             return False
         for concept in self.search([]):
