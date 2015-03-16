@@ -25,12 +25,17 @@ class res_partner(models.Model):
             self.document_number = mod_obj.group(1)
 
     @api.onchange('document_type_id', 'document_number')
-    def onchange_document(self):
+    def onchange_ar_document(self):
         mod_obj = self.env['ir.model.data']
-        cuit_id = mod_obj.get_object_reference('l10n_ar_invoice', 'dt_CUIT')
-        if cuit_id == self.document_type_id and \
+        cuit_id = mod_obj.get_object_reference('l10n_ar_invoice', 'dt_CUIT')[1]
+        if cuit_id == self.document_type_id.id and \
                 self.check_vat_ar(self.document_number):
-            self.vat = "AR%i" % self.document_number
+            self.vat = "AR%s" % self.document_number
+        elif cuit_id == self.document_type_id.id:
+            return {
+                'warning': {'title': _('Invalid CUIT'),
+                            'message': _('Please, set a valid CUIT number')}
+            }
 
     @api.multi
     def afip_validation(self):
@@ -68,12 +73,11 @@ class res_partner(models.Model):
         journal_obj = self.env['account.journal']
 
         partner = self
-        partner_id = self.id
         company = company_obj.browse(company_id)
         responsability = partner.responsability_id
 
         if responsability.issuer_relation_ids is None:
-            return result
+            return []
 
         type_map = {
             'out_invoice': ['sale'],
