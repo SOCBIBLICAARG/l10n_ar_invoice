@@ -119,6 +119,26 @@ class account_invoice(models.Model):
         period = self.period_id.find(prev_last_day)
         return period and prev_last_day or False
 
+    def create(self, cr, uid, values, context=None):
+        # Fix when create partner outside l10n_ar
+        # system select a wrong journal
+        if 'journal_id' in values and \
+                'partner_id' in values and \
+                'type' in values:
+            users_obj = self.pool.get('res.users')
+            partner_obj = self.pool.get('res.partner')
+            company_id = values.get(
+                'company_id',
+                users_obj.browse(cr, uid, uid).company_id.id)
+            values['journal_id'] = (
+                partner_obj.prefered_journals(
+                    cr, uid,
+                    values['partner_id'], company_id, values['type'],
+                    context=context) + [False]
+            )[0]
+        return super(account_invoice, self).create(cr, uid, values,
+                                                   context=context)
+
     afip_concept = fields.Selection([('1', 'Consumible'),
                                      ('2', 'Service'),
                                      ('3', 'Mixted')],
