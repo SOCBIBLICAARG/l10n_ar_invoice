@@ -120,9 +120,14 @@ class account_invoice(models.Model):
         return period and prev_last_day or False
 
     def create(self, cr, uid, values, context=None):
+        """
+        Create a new journal. If you set 'not_auto_journal' in
+        context the automatic selection of journal not work.
+        """
         # Fix when create partner outside l10n_ar
         # system select a wrong journal
-        if 'journal_id' in values and \
+        if 'not_auto_journal' not in context and \
+                'journal_id' in values and \
                 'partner_id' in values and \
                 'type' in values:
             users_obj = self.pool.get('res.users')
